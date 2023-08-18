@@ -30,8 +30,11 @@ const addUser = async (userData, next) => {
       [userID, email, hashedPassword, createdAt, updatedAt, userType]
     );
 
-    if (result[0].affectedRows) return await getUserByEmail(email, next);
-    else return next(new AppError("Error when fetching user from db"));
+    if (result[0].affectedRows) {
+      return await getUserByEmail(email, next);
+    } else {
+      return next(new AppError("Error when fetching user from db"));
+    }
   } catch (error) {
     return next(new AppError(`Error when saving user to db: ${error}`));
   }
