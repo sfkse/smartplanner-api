@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "debug": "ndb index.js",
     "test": "jest"
   },
   "repository": {
@@ -19,14 +20,19 @@
   },
   "homepage": "https://github.com/geshan/expressjs-structure#readme",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "email-validator": "^2.0.4",
     "express": "^4.17.1",
+    "jsonwebtoken": "^9.0.1",
     "mysql2": "^2.3.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "jest": "^27.4.5"
+    "jest": "^27.4.5",
+    "ndb": "^1.1.5"
   },
   "jest": {
     "testEnvironment": "node",
@@ -36,3 +42,4 @@
     "testRegex": "(/test/.*|(\\.|/)(test))\\.(js)x?$"
   }
 }
+
