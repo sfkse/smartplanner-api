@@ -1,36 +1,39 @@
 const validator = require("email-validator");
-const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
-function getOffset(currentPage = 1, listPerPage) {
-  return (currentPage - 1) * [listPerPage];
-}
+const validateCredentials = (
+  email,
+  firstName,
+  lastName,
+  location,
+  password,
+  passwordConfirm
+) => {
+  if (
+    !email ||
+    !firstName ||
+    !lastName ||
+    !location ||
+    !password ||
+    !passwordConfirm
+  )
+    return { error: true, status: 400, message: "Missing credentials" };
 
-function emptyOrRows(rows) {
-  if (!rows) {
-    return [];
-  }
-  return rows;
-}
+  if (!validator.validate(email))
+    return { error: true, status: 403, message: "Email is not valid" };
 
-const generateToken = (user) => {
-  const token = jwt.sign(
-    { id: user.idusers, userType: user.userType },
-    process.env.JWT_ACCESS_SECRET,
-    {
-      expiresIn: 86400, // 24 hours
-    }
-  );
-  return token;
+  if (password !== passwordConfirm)
+    return { error: true, status: 400, message: "Passwords do not match" };
+
+  return { error: false };
 };
 
-const validateEmail = (email) => {
-  return validator.validate(email);
+const isCorrectPassword = async (incomingPassword, userPassword) => {
+  return await bcrypt.compare(incomingPassword, userPassword);
 };
 
 module.exports = {
-  getOffset,
-  emptyOrRows,
-  generateToken,
-  validateEmail,
+  validateCredentials,
+  isCorrectPassword,
 };
 
