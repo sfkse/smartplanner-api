@@ -17,7 +17,7 @@ const getAllUsers = async (next) => {
 const getSingleUser = async (userID, next) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM code_buddy.users WHERE idusers = ? and active = true",
+      "SELECT * FROM code_buddy.users WHERE idusers = ? and active",
       [userID]
     );
     return result[0];
@@ -29,7 +29,7 @@ const getSingleUser = async (userID, next) => {
 const getSingleUserByEmail = async (email, next) => {
   try {
     const result = await pool.query(
-      "SELECT mail FROM code_buddy.users WHERE email = ? and active",
+      "SELECT * FROM code_buddy.users WHERE email = ? and active",
       [email]
     );
     return result[0];
@@ -72,11 +72,8 @@ const createUser = async (userData, next) => {
       ]
     );
 
-    if (result[0].affectedRows) {
-      return await getSingleUser(email, next);
-    } else {
-      return next(new AppError("Error when fetching user from db"));
-    }
+    if (result[0].affectedRows) return await getSingleUserByEmail(email, next);
+    else return next(new AppError("Error when fetching user from db"));
   } catch (error) {
     return next(new AppError(`Error when saving user to db: ${error}`));
   }

@@ -33,16 +33,13 @@ const register = async (req, res, next) => {
     password,
     passwordConfirm
   );
-  if (validationResult.error) {
+  if (validationResult.error)
     return next(
       new AppError(validationResult.message, validationResult.status)
     );
-  }
 
   const user = await getSingleUserByEmail(email, next);
-  if (user.length > 0) {
-    return next(new AppError("User already exists", 409));
-  }
+  if (user.length > 0) return next(new AppError("User already exists", 409));
 
   const updatedAt = getTimestampSeconds();
   const userType = 0;
@@ -72,9 +69,8 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   // Check if email and password exist
-  if (!email || !password) {
+  if (!email || !password)
     return next(new AppError("Please provide email and password!", 400));
-  }
 
   // Check if user exists && password is correct
   const user = await getSingleUserByEmail(email, next);
@@ -82,9 +78,8 @@ const login = async (req, res, next) => {
   if (
     user.length === 0 ||
     !(user.length > 0 && (await isCorrectPassword(password, user[0].password)))
-  ) {
+  )
     return next(new AppError("Incorrect email or password", 401));
-  }
 
   // If everything ok, send token to client
   createSendToken(user[0], 200, res, next);
@@ -124,10 +119,6 @@ const createSendToken = (user, statusCode, res, next) => {
     return next(new AppError(`Something went wrong ${error}`));
   }
 };
-
-/*
- * @desc    Auth middlewares
- */
 
 module.exports = {
   login,

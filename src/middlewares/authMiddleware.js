@@ -16,11 +16,10 @@ const verifyJWTMiddleware = async (req, res, next) => {
       token = req.cookies.jwt;
     }
 
-    if (!token) {
+    if (!token)
       return next(
         new AppError("You are not logged in! Please log in to get access.", 401)
       );
-    }
 
     // 2) Verification token
     const decoded = await promisify(jwt.verify)(
@@ -30,14 +29,13 @@ const verifyJWTMiddleware = async (req, res, next) => {
 
     // 3) Check if user still exists
     const currentUser = await getSingleUser(decoded.id);
-    if (currentUser.length === 0) {
+    if (currentUser.length === 0)
       return next(
         new AppError(
           "The user belonging to this token does no longer exist.",
           401
         )
       );
-    }
 
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser;
