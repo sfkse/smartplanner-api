@@ -10,7 +10,7 @@ const getAllUsers = async (next) => {
     const result = await pool.query("SELECT * FROM code_buddy.users");
     return result[0];
   } catch (error) {
-    return next(new AppError("Error when fetching users from db"));
+    return next(error);
   }
 };
 
@@ -22,7 +22,7 @@ const getSingleUser = async (userID, next) => {
     );
     return result[0];
   } catch (error) {
-    return next(new AppError(`Error when fetching user from db: ${error}`));
+    return next(error);
   }
 };
 
@@ -34,7 +34,7 @@ const getSingleUserByEmail = async (email, next) => {
     );
     return result[0];
   } catch (error) {
-    return next(new AppError(`Error when fetching user from db: ${error}`));
+    return next(error);
   }
 };
 
@@ -75,7 +75,7 @@ const createUser = async (userData, next) => {
     if (result[0].affectedRows) return await getSingleUserByEmail(email, next);
     else return next(new AppError("Error when fetching user from db"));
   } catch (error) {
-    return next(new AppError(`Error when saving user to db: ${error}`));
+    return next(error);
   }
 };
 

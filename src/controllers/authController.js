@@ -9,10 +9,8 @@ const {
   isCorrectPassword,
 } = require("../helpers/authhelper");
 
-/*
- * @desc    Register new user
- * @route   POST /api/v1/auth/register
- * @access  Public
+/**
+ ** @desc Register new user
  */
 const register = async (req, res, next) => {
   const {
@@ -60,10 +58,8 @@ const register = async (req, res, next) => {
   createSendToken(newUser[0], 201, res, next);
 };
 
-/*
- * @desc    Login user
- * @route   POST /api/v1/auth/login
- * @access  Public
+/**
+ ** @desc Login user
  */
 const login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -85,10 +81,9 @@ const login = async (req, res, next) => {
   createSendToken(user[0], 200, res, next);
 };
 
-/*
- * @desc Auth response helper
+/**
+ ** @desc Auth response helpers
  */
-
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_ACCESS_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,

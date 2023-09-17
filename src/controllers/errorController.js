@@ -49,17 +49,13 @@ const sendErrorProd = (err, res) => {
   }
 };
 
-module.exports = (err, req, res) => {
-  // console.log(err.stack);
+module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  if (process.env.NODE_ENV === "dev") {
-    sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === "production") {
-    let error = { ...err };
+  if (process.env.NODE_ENV === "dev") sendErrorDev(err, res);
+  else if (process.env.NODE_ENV === "prod") sendErrorProd(err, res);
 
-    sendErrorProd(error, res);
-  }
+  next();
 };
 

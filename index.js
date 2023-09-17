@@ -19,8 +19,14 @@ const { corsOptions } = require("./src/helpers/authhelper");
 const AppError = require("./src/helpers/errorHelper");
 
 const app = express();
-
-// GLOBAL MIDDLEWARES
+process.on("uncaughtException", (err) => {
+  console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
+  console.log(err.name, err.message);
+  process.exit(1);
+});
+/**
+ ** @desc GLOBAL MIDDLEWARES
+ */
 // Implement CORS
 app.use(cors(corsOptions));
 app.options("*", cors());
@@ -63,7 +69,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// ROUTES
+/**
+ ** @desc ROUTES
+ */
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", verifyJWTMiddleware, userRoutes);
 app.use("/api/v1/chat", verifyJWTMiddleware, chatRoutes);
@@ -72,13 +80,15 @@ app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-/* Error handler middleware */
-app.use(globalErrorHandler);
-
 const port = process.env.PORT || 3000;
 const server = app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
+
+/**
+ ** @desc GLOBAL ERROR HANDLER
+ */
+app.use(globalErrorHandler);
 
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! 💥 Shutting down...");
