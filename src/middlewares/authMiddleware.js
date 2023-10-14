@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const AppError = require("../helpers/errorHelper");
-const { getSingleUser } = require("../models/userModel");
+const { getUser } = require("../models/userModel");
 
 const verifyJWTMiddleware = async (req, res, next) => {
   try {
@@ -28,7 +28,7 @@ const verifyJWTMiddleware = async (req, res, next) => {
     );
 
     // 3) Check if user still exists
-    const currentUser = await getSingleUser(decoded.id);
+    const currentUser = await getUser(decoded.id);
     if (currentUser.length === 0)
       return next(
         new AppError(
@@ -38,8 +38,8 @@ const verifyJWTMiddleware = async (req, res, next) => {
       );
 
     // GRANT ACCESS TO PROTECTED ROUTE
-    req.user = currentUser;
-    res.locals.user = currentUser;
+    req.user = currentUser[0];
+    res.locals.user = currentUser[0];
     next();
   } catch (error) {
     return next(new AppError("Error when verifying JWT", 500));

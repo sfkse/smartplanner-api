@@ -13,23 +13,15 @@ const {
  ** @desc Register new user
  */
 const register = async (req, res, next) => {
-  const {
-    email,
-    firstName,
-    lastName,
-    location,
-    skills,
-    password,
-    passwordConfirm,
-  } = req.body;
+  const { email, firstName, lastName, skills, password, confirmPassword } =
+    req.body;
 
   const validationResult = validateCredentials(
     email,
     firstName,
     lastName,
-    location,
     password,
-    passwordConfirm
+    confirmPassword
   );
   if (validationResult.error)
     return next(
@@ -47,7 +39,6 @@ const register = async (req, res, next) => {
     lastName,
     updatedAt,
     userType,
-    location,
     skills,
     password,
   };
@@ -98,10 +89,13 @@ const createSendToken = (user, statusCode, res, next) => {
         Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
       ),
       httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
     if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
 
     res.cookie("jwt", token, cookieOptions);
+
+    user.password = undefined;
 
     res.status(statusCode).json({
       status: "success",

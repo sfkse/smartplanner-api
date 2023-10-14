@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const verifyTokenMiddleware = (req, res, next) => {
   const token = req.cookies.token;
-  console.log(token);
   if (!token) {
     return next(new AppError("You are not logged in", 401));
   }

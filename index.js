@@ -15,7 +15,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const chatRoutes = require("./src/routes/chatRoutes");
 
-const { corsOptions } = require("./src/helpers/authhelper");
+// const { corsOptions } = require("./src/helpers/authhelper");
 const AppError = require("./src/helpers/errorHelper");
 
 const app = express();
@@ -28,8 +28,31 @@ process.on("uncaughtException", (err) => {
  ** @desc GLOBAL MIDDLEWARES
  */
 // Implement CORS
+const corsOptions = {
+  origin: "http://localhost:3001",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  credentials: true,
+};
+
+//cors options for preflight
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, PUT ,DELETE, OPTIONS"
+//   );
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
+// app.use(cors(corsOptions));
 app.use(cors(corsOptions));
-app.options("*", cors());
+app.options("http://localhost:3001", cors(corsOptions));
 
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -44,7 +67,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Limit requests from same API
 const limiter = rateLimit({
-  max: 100,
+  max: 1000,
   windowMs: 60 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
 });

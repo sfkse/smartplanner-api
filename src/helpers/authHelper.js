@@ -5,24 +5,16 @@ const validateCredentials = (
   email,
   firstName,
   lastName,
-  location,
   password,
-  passwordConfirm
+  confirmPassword
 ) => {
-  if (
-    !email ||
-    !firstName ||
-    !lastName ||
-    !location ||
-    !password ||
-    !passwordConfirm
-  )
+  if (!email || !firstName || !lastName || !password || !confirmPassword)
     return { error: true, status: 400, message: "Missing credentials" };
 
   if (!validator.validate(email))
     return { error: true, status: 403, message: "Email is not valid" };
 
-  if (password !== passwordConfirm)
+  if (password !== confirmPassword)
     return { error: true, status: 400, message: "Passwords do not match" };
 
   return { error: false };
