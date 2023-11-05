@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-const { getSingleUserByEmail, createUser } = require("../models/userModel");
+const {
+  getSingleUserByEmail,
+  createUser,
+  getUserById,
+  setRegistered,
+} = require("../models/userModel");
 
 const AppError = require("../helpers/errorHelper");
 const { getTimestampSeconds } = require("../helpers/dateHelper");
@@ -31,13 +36,13 @@ const register = async (req, res, next) => {
   const user = await getSingleUserByEmail(email, next);
   if (user.length > 0) return next(new AppError("User already exists", 409));
 
-  const updatedAt = getTimestampSeconds();
+  const updated = getTimestampSeconds();
   const userType = 0;
   const userObj = {
     email,
     firstName,
     lastName,
-    updatedAt,
+    updated,
     userType,
     skills,
     password,
@@ -109,8 +114,73 @@ const createSendToken = (user, statusCode, res, next) => {
   }
 };
 
+const logout = (req, res) => {
+  res
+    .cookie("jwt", "", {
+      httpOnly: true,
+      expires: new Date(0),
+      secure: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    })
+    .send();
+};
+
+const getLoggedInUser = async (req, res) => {
+  if (req.cookies.jwt) {
+    try {
+      // 1) verify token
+      const decoded = jwt.verify(
+        req.cookies.jwt,
+        process.env.JWT_ACCESS_SECRET
+      );
+      // 2) Check if user still exists
+      const currentUser = await getUserById(decoded.id);
+      if (!currentUser) {
+        return res.status(200).json(null);
+      }
+
+      // 3) Check if user changed password after the token was issued
+      // if (currentUser.changedPasswordAfter(decoded.iat)) {
+      //   return next();
+      // }
+
+      // THERE IS A LOGGED IN USER
+      delete currentUser[0].password;
+      // const user = {
+      //   idusers: currentUser[0].idusers,
+      //   firstName: currentUser[0].firstname,
+      //   lastName: currentUser[0].lastname,
+      //   email: currentUser[0].email,
+      //   userType: currentUser[0].usertype,
+      //   skills: currentUser[0].skills,
+      // }
+      return res.status(200).json(currentUser[0]);
+    } catch (err) {
+      return res.status(200).json(null);
+    }
+  }
+  return res.status(200).json(null);
+};
+
+const setUserRegistered = async (req, res, next) => {
+  const { idUser } = req.body;
+  try {
+    const updatedUser = await setRegistered(idUser, next);
+    if (!updatedUser) return next(new AppError("Error when updating user"));
+
+    return res.status(200).json("User updated");
+  } catch (error) {
+    return next(
+      new AppError(`Error in setUserRegistered when updating user: ${error}`)
+    );
+  }
+};
+
 module.exports = {
   login,
   register,
+  logout,
+  getLoggedInUser,
+  setUserRegistered,
 };
 

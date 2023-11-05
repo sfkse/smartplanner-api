@@ -7,21 +7,29 @@ const { getTimestampSeconds } = require("../helpers/dateHelper");
 
 const getAllUsers = async (next) => {
   try {
-    const result = await pool.query("SELECT * FROM code_buddy.users");
-    console.log(result[0]);
+    const result = await pool.query(
+      "SELECT firstname, lastname, location, skills FROM users"
+    );
+
     return result[0];
   } catch (error) {
     return next(error);
   }
 };
 
-const getUser = async (userID, next) => {
+const getUserById = async (userID, next) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM code_buddy.users WHERE idusers = ? and active",
+      "SELECT * FROM users WHERE idusers = ? and active",
       [userID]
     );
-    return result[0];
+
+    const response = result[0].map((user) => ({
+      ...user,
+      skills: JSON.parse(user.skills),
+    }));
+
+    return response;
   } catch (error) {
     return next(error);
   }
@@ -30,7 +38,7 @@ const getUser = async (userID, next) => {
 const getSingleUserByEmail = async (email, next) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM code_buddy.users WHERE email = ? and active",
+      "SELECT * FROM users WHERE email = ? and active",
       [email]
     );
     return result[0];
@@ -41,31 +49,24 @@ const getSingleUserByEmail = async (email, next) => {
 
 const createUser = async (userData, next) => {
   try {
-    const {
-      email,
-      firstName,
-      lastName,
-      skills,
-      password,
-      updatedAt,
-      userType,
-    } = userData;
+    const { email, firstName, lastName, skills, password, updated, userType } =
+      userData;
 
     const hashProcessed = await bcrypt.hash(password, 10);
     const hashedPassword = await hashProcessed;
     const userID = uuidv4();
-    const createdAt = getTimestampSeconds();
+    const created = getTimestampSeconds();
 
     const result = await pool.execute(
-      "INSERT INTO code_buddy.users (idusers, firstname, lastname, email, password, created_at, updated_at, user_type, skills) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO users (idusers, firstname, lastname, email, password, created, updated, usertype, skills) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         userID,
         firstName,
         lastName,
         email,
         hashedPassword,
-        createdAt,
-        updatedAt,
+        created,
+        updated,
         userType,
         skills,
       ]
@@ -79,11 +80,17 @@ const createUser = async (userData, next) => {
 };
 
 const updateUser = async (userID, data, next) => {
+  const { firstname, lastname, skills } = data;
+
+  const updated = getTimestampSeconds();
   try {
     const result = await pool.execute(
-      "UPDATE code_buddy.users SET coordinates = ? WHERE idusers = ?",
-      [data, userID]
+      "UPDATE users SET firstname=?, lastname=?, skills=?, updated=? WHERE idusers = ?",
+      [firstname, lastname, JSON.stringify(skills), updated, userID]
     );
+
+    if (result[0].affectedRows) return true;
+    return false;
   } catch (error) {
     return next(error);
   }
@@ -94,8 +101,23 @@ const updateUserLocation = async (userID, data, next) => {
 
   try {
     const result = await pool.execute(
-      "UPDATE code_buddy.users SET location = ? WHERE idusers = ?",
+      "UPDATE code_buddy.users SET location=? WHERE idusers = ?",
       [stringifiedData, userID]
+    );
+
+    if (result[0].affectedRows) return true;
+    return false;
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const setRegistered = async (userID, next) => {
+  const updated = getTimestampSeconds();
+  try {
+    const result = await pool.execute(
+      "UPDATE users SET registered=?, updated=? WHERE idusers = ?",
+      [1, updated, userID]
     );
 
     if (result[0].affectedRows) return true;
@@ -107,10 +129,11 @@ const updateUserLocation = async (userID, data, next) => {
 
 module.exports = {
   getAllUsers,
-  getUser,
+  getUserById,
   getSingleUserByEmail,
   createUser,
   updateUser,
   updateUserLocation,
+  setRegistered,
 };
 

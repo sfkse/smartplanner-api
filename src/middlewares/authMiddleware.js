@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const AppError = require("../helpers/errorHelper");
-const { getUser } = require("../models/userModel");
+const { getUserById } = require("../models/userModel");
 
 const verifyJWTMiddleware = async (req, res, next) => {
   try {
@@ -28,7 +28,7 @@ const verifyJWTMiddleware = async (req, res, next) => {
     );
 
     // 3) Check if user still exists
-    const currentUser = await getUser(decoded.id);
+    const currentUser = await getUserById(decoded.id);
     if (currentUser.length === 0)
       return next(
         new AppError(
