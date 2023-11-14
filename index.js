@@ -15,6 +15,7 @@ const authRoutes = require("./src/routes/authRoutes");
 const userRoutes = require("./src/routes/userRoutes");
 const noteRoutes = require("./src/routes/noteRoutes");
 const eventsRoutes = require("./src/routes/eventsRoutes");
+const discussionRoutes = require("./src/routes/discussionRoutes");
 const chatRoutes = require("./src/routes/chatRoutes");
 
 // const { corsOptions } = require("./src/helpers/authhelper");
@@ -86,6 +87,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/notes", verifyJWTMiddleware, noteRoutes);
 app.use("/api/v1/events", eventsRoutes);
+app.use("/api/v1/discussions", discussionRoutes);
 app.use("/api/v1/chat", verifyJWTMiddleware, chatRoutes);
 
 app.all("*", (req, res, next) => {

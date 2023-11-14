@@ -10,8 +10,11 @@ const getAllUsers = async (next) => {
     const result = await pool.query(
       "SELECT firstname, lastname, location, skills FROM users"
     );
-
-    return result[0];
+    const response = result[0].map((user) => ({
+      ...user,
+      skills: JSON.parse(user.skills),
+    }));
+    return response;
   } catch (error) {
     return next(error);
   }

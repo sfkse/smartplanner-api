@@ -34,14 +34,20 @@ const getEventsByUserId = async (iduser, status, next) => {
       [iduser, status]
     );
 
-    return result[0];
+    const response = result[0].map((event) => ({
+      ...event,
+      tags: JSON.parse(event.timeline),
+    }));
+    console.log("response", response);
+    return response;
   } catch (error) {
     return next(error);
   }
 };
 
 const createEvent = async (data, next) => {
-  const { title, description, date, location, timeline, creator, type } = data;
+  const { title, description, date, location, timeline, creator, status } =
+    data;
 
   const eventID = uuidv4();
   const created = getTimestampSeconds();
@@ -52,7 +58,7 @@ const createEvent = async (data, next) => {
       "INSERT INTO events (idevents, status, title, description, date, location, timeline, creator, created, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         eventID,
-        type,
+        status,
         title,
         description,
         date,
@@ -101,6 +107,19 @@ const getParticipantsByEventId = async (id, next) => {
   }
 };
 
+const getJoinedEventsByUserId = async (id, next) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM events WHERE idevents IN (SELECT idevents FROM eventparticipants WHERE idusers = ?)",
+      [id]
+    );
+
+    return result[0];
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getEvents,
   getEventById,
@@ -108,5 +127,6 @@ module.exports = {
   createEvent,
   joinEvent,
   getParticipantsByEventId,
+  getJoinedEventsByUserId,
 };
 

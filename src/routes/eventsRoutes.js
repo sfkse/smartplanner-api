@@ -8,6 +8,7 @@ router.get("/single/:id/participants", eventsController.getEventParticipants);
 router.get("/single/:id", eventsController.getSingleEvent);
 router.get("/:id/all", eventsController.getAllEvents);
 router.get("/user/:id", eventsController.getUserEvents);
+router.get("/user/:id/joined", eventsController.getJoinedEvents);
 router.post("/create", eventsController.createEvents);
 
 module.exports = router;

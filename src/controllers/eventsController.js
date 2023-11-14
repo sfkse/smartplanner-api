@@ -6,6 +6,7 @@ const {
   getEventById,
   joinEvent,
   getParticipantsByEventId,
+  getJoinedEventsByUserId,
 } = require("../models/eventsModel");
 
 const getAllEvents = async (req, res, next) => {
@@ -44,9 +45,13 @@ const getUserEvents = async (req, res, next) => {
   }
 };
 const createEvents = async (req, res, next) => {
+  console.log(req.body);
   try {
-    await createEvent(req.body, next);
-    return res.status(201).json("Event created");
+    const isCreated = await createEvent(req.body, next);
+    if (isCreated) {
+      return res.status(201).json("Event created");
+    }
+    return next(new AppError("Error in createEvents when creating event"));
   } catch (error) {
     return next(
       new AppError(
@@ -86,6 +91,18 @@ const getEventParticipants = async (req, res, next) => {
   }
 };
 
+const getJoinedEvents = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const events = await getJoinedEventsByUserId(id, next);
+    return res.status(200).json(events);
+  } catch (error) {
+    return next(
+      new AppError(`Error in getJoinedEvents when fetching events: ${error}`)
+    );
+  }
+};
+
 module.exports = {
   getAllEvents,
   getSingleEvent,
@@ -93,5 +110,6 @@ module.exports = {
   createEvents,
   joinSingleEvent,
   getEventParticipants,
+  getJoinedEvents,
 };
 
