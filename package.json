@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "debug": "ndb index.js",
-    "test": "jest"
+    "test": "jest",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/geshan/expressjs-structure#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

@@ -3,8 +3,11 @@ const router = express.Router();
 const discussionsController = require("../controllers/discussionsController");
 
 router.get("/all", discussionsController.getAllDiscussions);
-router.get("/:id", discussionsController.getSingleDiscussion);
-router.get("/:id/comments", discussionsController.getDiscussionComments);
+router.get("/:id", discussionsController.getDiscussionWithCommentsExpandUser);
+router.get(
+  "/:id/comments",
+  discussionsController.getDiscussionWithCommentsExpandUser
+);
 router.post("/:id/comment", discussionsController.createDiscussionComment);
 router.get("/user/:id", discussionsController.getUserDiscussions);
 router.post("/create", discussionsController.createDiscussions);

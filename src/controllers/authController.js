@@ -12,7 +12,7 @@ const { getTimestampSeconds } = require("../helpers/dateHelper");
 const {
   validateCredentials,
   isCorrectPassword,
-} = require("../helpers/authhelper");
+} = require("../helpers/authHelper");
 
 /**
  ** @desc Register new user

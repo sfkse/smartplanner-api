@@ -54,12 +54,13 @@ const getDiscussions = async (next) => {
   }
 };
 
-const getDiscussionComments = async (id, next) => {
+const getDiscussionWithComments = async (id, next) => {
   try {
     const result = await pool.query(
-      "SELECT d.iddiscussions, d.title, d.content, d.created, d.updated, d.upvote, d.downvote, d.tags, c.iddiscussioncomments, c.idusers, c.comment, u.firstname, u.lastname, u.username, u.skills, u.location FROM discussions d LEFT JOIN discussioncomments c ON d.iddiscussions = c.iddiscussions LEFT JOIN users u ON d.owner = u.idusers WHERE d.iddiscussions=? ORDER BY d.created DESC",
+      "SELECT d.iddiscussions, d.title, d.content, d.created, d.updated, d.upvote, d.downvote, d.tags, c.iddiscussioncomments, c.idusers, c.comment, u.firstname, u.lastname, u.username, u.skills, u.location FROM discussions d LEFT JOIN discussioncomments c ON d.iddiscussions = c.iddiscussions LEFT JOIN users u ON c.idusers = u.idusers WHERE d.iddiscussions=? ORDER BY d.created DESC",
       [id]
     );
+    console.log("res", result[0]);
     const discussionWithComments = result[0].reduce((acc, row) => {
       const discussionId = row.iddiscussions;
 
@@ -193,7 +194,7 @@ const getCommentsByDiscussionId = async (id, next) => {
 
 module.exports = {
   getDiscussions,
-  getDiscussionComments,
+  getDiscussionWithComments,
   getDiscussionById,
   getDiscussionsByUserId,
   createDiscussion,

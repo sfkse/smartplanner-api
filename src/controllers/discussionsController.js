@@ -5,7 +5,7 @@ const {
   getDiscussionsByUserId,
   createDiscussion,
   createComment,
-  getCommentsByDiscussionId,
+  getDiscussionWithComments,
 } = require("../models/discussionsModel");
 
 const getAllDiscussions = async (req, res, next) => {
@@ -69,14 +69,14 @@ const createDiscussionComment = async (req, res, next) => {
   }
 };
 
-const getDiscussionComments = async (req, res, next) => {
+const getDiscussionWithCommentsExpandUser = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const comments = await getCommentsByDiscussionId(id, next);
+    const comments = await getDiscussionWithComments(id, next);
     return res.status(200).json(comments);
   } catch (error) {
     new AppError(
-      `Error in getDiscussionComments when fetching comments: ${error}`
+      `Error in getDiscussionWithComments when fetching comments: ${error}`
     );
   }
 };
@@ -87,6 +87,6 @@ module.exports = {
   getUserDiscussions,
   createDiscussions,
   createDiscussionComment,
-  getDiscussionComments,
+  getDiscussionWithCommentsExpandUser,
 };
 

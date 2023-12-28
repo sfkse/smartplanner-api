@@ -13,6 +13,7 @@ const getAllUsers = async (next) => {
     const response = result[0].map((user) => ({
       ...user,
       skills: JSON.parse(user.skills),
+      location: JSON.parse(user.location),
     }));
     return response;
   } catch (error) {
@@ -52,13 +53,14 @@ const getSingleUserByEmail = async (email, next) => {
 
 const createUser = async (userData, next) => {
   try {
-    const { email, firstName, lastName, skills, password, updated, userType } =
-      userData;
+    const { email, firstName, lastName, skills, password } = userData;
 
     const hashProcessed = await bcrypt.hash(password, 10);
     const hashedPassword = await hashProcessed;
     const userID = uuidv4();
     const created = getTimestampSeconds();
+    const updated = getTimestampSeconds();
+    const userType = 0;
 
     const result = await pool.execute(
       "INSERT INTO users (idusers, firstname, lastname, email, password, created, updated, usertype, skills) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -71,7 +73,7 @@ const createUser = async (userData, next) => {
         created,
         updated,
         userType,
-        skills,
+        JSON.stringify(skills),
       ]
     );
 
