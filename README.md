@@ -1,6 +1,6 @@
 # Code Buddy API
 
-This repository contains the backend API for the Code Buddy application, built using Express.js and MySQL. It serves as the backbone for handling data and business logic for various features like user authentication, chat, discussions, events, and notes.
+This repository contains the backend API for the Code Buddy application, built using Express.js and MySQL. It serves as the backbone for handling data and business logic for various features like user authentication, chat, discussions, events, and notes. Still in development phase
 
 ## Features
 
