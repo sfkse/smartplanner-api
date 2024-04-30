@@ -3,31 +3,16 @@ const {
   getAllUsers,
   updateUserLocation,
   updateUser,
+  createUser,
+  getCustomerUsers,
 } = require("../models/userModel");
 const { getUserById } = require("../models/userModel");
 
 const getUsers = async (req, res, next) => {
+  const { idcustomers } = res.locals.user;
   try {
-    const users = await getAllUsers(next);
-    // TODO: remove password from response, return skills as array
-    // const returnUsers = users.map((user) => {
-    //   delete user.password;
-    //   user.skills = JSON.parse(user.skills);
-    //   console.log(user);
-    // });
-    // for (let index = 0; index < users.length; index++) {
-    //   const user = users[index];
-    //   // delete user.password;
-    //   user.skills = JSON.parse(user.skills);
-    // }
-    // console.log("returnUsers", users);
-    // if (users.length > 0) {
-    //   for (let index = 0; index < users.length; index++) {
-    //     const user = users[index];
-    //     user.skills = JSON.parse(user.skills);
-    //   }
-    //   console.log("users", users);
-    // }
+    const users = await getAllUsers(idcustomers, next);
+
     const returnUsers = users.map((user) => {
       delete user.password;
       return user;
@@ -35,6 +20,26 @@ const getUsers = async (req, res, next) => {
     return res.status(200).json(returnUsers);
   } catch (error) {
     return next(new AppError(`Error when fetching users: ${error}`));
+  }
+};
+
+const getAllCustomerUsers = async (req, res, next) => {
+  const { idcustomers: customerID } = res.locals.user;
+  try {
+    const users = await getCustomerUsers(customerID, next);
+
+    return res.status(200).json(users);
+  } catch (error) {
+    return next(new AppError(`Error when fetching users: ${error}`));
+  }
+};
+
+const createNewUser = async (req, res, next) => {
+  try {
+    const user = await createUser(req.body, next);
+    return res.status(201).json(user);
+  } catch (error) {
+    return next(new AppError(`Error when creating user: ${error}`));
   }
 };
 
@@ -76,7 +81,9 @@ const updateSingleUserLocation = async (req, res, next) => {
 };
 
 module.exports = {
+  createNewUser,
   getUsers,
+  getAllCustomerUsers,
   getSingleUser,
   updateSingleUser,
   updateSingleUserLocation,

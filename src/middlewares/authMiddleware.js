@@ -7,6 +7,7 @@ const verifyJWTMiddleware = async (req, res, next) => {
   try {
     // 1) Getting token and check of it's there
     let token;
+
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -28,7 +29,7 @@ const verifyJWTMiddleware = async (req, res, next) => {
     );
 
     // 3) Check if user still exists
-    const currentUser = await getUserById(decoded.id);
+    const currentUser = await getUserById(decoded.idusers);
     if (currentUser.length === 0)
       return next(
         new AppError(
@@ -36,7 +37,6 @@ const verifyJWTMiddleware = async (req, res, next) => {
           401
         )
       );
-
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser[0];
     res.locals.user = currentUser[0];

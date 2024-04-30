@@ -12,11 +12,14 @@ const { verifyJWTMiddleware } = require("./src/middlewares/authMiddleware");
 const globalErrorHandler = require("./src/controllers/errorController");
 
 const authRoutes = require("./src/routes/authRoutes");
+const classRoutes = require("./src/routes/classRoutes");
 const userRoutes = require("./src/routes/userRoutes");
-const noteRoutes = require("./src/routes/noteRoutes");
-const eventsRoutes = require("./src/routes/eventsRoutes");
-const discussionRoutes = require("./src/routes/discussionRoutes");
-const chatRoutes = require("./src/routes/chatRoutes");
+const lessonRoutes = require("./src/routes/lessonRoutes");
+const customerRoutes = require("./src/routes/customerRoutes");
+const timeplanRoutes = require("./src/routes/timeplanRoutes");
+const classTimeplanRoutes = require("./src/routes/classTimeplanRoutes");
+const requestRoutes = require("./src/routes/requestRoutes");
+const yearlyplanRoutes = require("./src/routes/yearlyplanRoutes");
 
 // const { corsOptions } = require("./src/helpers/authhelper");
 const AppError = require("./src/helpers/errorHelper");
@@ -32,7 +35,7 @@ process.on("uncaughtException", (err) => {
  */
 // Implement CORS
 const corsOptions = {
-  origin: "http://localhost:3001",
+  origin: "http://localhost:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   optionsSuccessStatus: 204,
@@ -40,7 +43,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("http://localhost:3001", cors(corsOptions));
+app.options("http://localhost:3000", cors(corsOptions));
 
 // Serving static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -84,17 +87,20 @@ app.use((req, res, next) => {
  ** @desc ROUTES
  */
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/notes", verifyJWTMiddleware, noteRoutes);
-app.use("/api/v1/events", eventsRoutes);
-app.use("/api/v1/discussions", discussionRoutes);
-app.use("/api/v1/chat", verifyJWTMiddleware, chatRoutes);
+app.use("/api/v1/customers", verifyJWTMiddleware, customerRoutes);
+app.use("/api/v1/classes", verifyJWTMiddleware, classRoutes);
+app.use("/api/v1/users", verifyJWTMiddleware, userRoutes);
+app.use("/api/v1/lessons", verifyJWTMiddleware, lessonRoutes);
+app.use("/api/v1/timeplans", verifyJWTMiddleware, timeplanRoutes);
+app.use("/api/v1/classtimeplans", verifyJWTMiddleware, classTimeplanRoutes);
+app.use("/api/v1/requests", verifyJWTMiddleware, requestRoutes);
+app.use("/api/v1/yearlyplans", verifyJWTMiddleware, yearlyplanRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const server = app.listen(port, "0.0.0.0", () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
@@ -106,7 +112,7 @@ app.use(globalErrorHandler);
 
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! 💥 Shutting down...");
-  console.log(err.name, err.message);
+  console.log(err, err.name, err.message);
   server.close(() => {
     process.exit(1);
   });

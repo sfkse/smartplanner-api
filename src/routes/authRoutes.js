@@ -5,14 +5,13 @@ const {
   register,
   logout,
   getLoggedInUser,
-  setUserRegistered,
 } = require("../controllers/authController");
+const { verifyJWTMiddleware } = require("../middlewares/authMiddleware");
 
 router.post("/login", login);
 router.post("/register", register);
 router.post("/logout", logout);
-router.post("/setUserRegistered", setUserRegistered);
-router.get("/authuser", getLoggedInUser);
+router.get("/authuser", verifyJWTMiddleware, getLoggedInUser);
 
 module.exports = router;
 

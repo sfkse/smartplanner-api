@@ -74,21 +74,26 @@ const login = async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
 
   // If everything ok, send token to client
-  createSendToken(user[0], 200, res, next);
+  return createSendToken(user[0], 200, res, next);
 };
 
 /**
  ** @desc Auth response helpers
  */
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_ACCESS_SECRET, {
+const signToken = (payload) => {
+  return jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
 const createSendToken = (user, statusCode, res, next) => {
   try {
-    const token = signToken(user.idusers);
+    const tokenPayload = {
+      idusers: user.idusers,
+      customerID: user.idcustomers,
+      userType: user.usertype,
+    };
+    const token = signToken(tokenPayload);
     const cookieOptions = {
       expires: new Date(
         Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -102,7 +107,7 @@ const createSendToken = (user, statusCode, res, next) => {
 
     user.password = undefined;
 
-    res.status(statusCode).json({
+    return res.status(statusCode).json({
       status: "success",
       token,
       data: {
@@ -133,8 +138,9 @@ const getLoggedInUser = async (req, res) => {
         req.cookies.jwt,
         process.env.JWT_ACCESS_SECRET
       );
+
       // 2) Check if user still exists
-      const currentUser = await getUserById(decoded.id);
+      const currentUser = await getUserById(decoded.idusers);
       if (!currentUser) {
         return res.status(200).json(null);
       }
