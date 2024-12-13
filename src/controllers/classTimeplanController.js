@@ -4,6 +4,7 @@ const {
   getClassTimeplansExpanded,
   updateClassTimeplan,
   deleteTimeplan,
+  getClassTimeplanByClass,
 } = require("../models/classTimeplanModel");
 
 const getCustomerClassTimeplans = async (req, res, next) => {
@@ -33,6 +34,22 @@ const getCustomerSingleClassTimeplans = async (req, res, next) => {
     return next(
       new AppError(
         `Error in getCustomerSingleClassTimeplans when fetching timeplans: ${error}`
+      )
+    );
+  }
+};
+
+const getClassTimePlanByClassId = async (req, res, next) => {
+  const { idcustomers } = res.locals.user;
+  const { id } = req.params;
+
+  try {
+    const classTimeplan = await getClassTimeplanByClass(idcustomers, id, next);
+    return res.status(200).json(classTimeplan);
+  } catch (error) {
+    return next(
+      new AppError(
+        `Error in getClassTimePlanByClassId when fetching timeplans: ${error}`
       )
     );
   }
@@ -77,6 +94,7 @@ const deleteClassTimeplan = async (req, res, next) => {
 module.exports = {
   getCustomerClassTimeplans,
   getCustomerSingleClassTimeplans,
+  getClassTimePlanByClassId,
   createNewClassTimeplan,
   updateClassTimeplanname,
   deleteClassTimeplan,

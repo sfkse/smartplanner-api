@@ -34,11 +34,10 @@ const createLesson = async (customerID, name, next) => {
   const updated = getTimestampSeconds();
 
   try {
-    const res = await pool.query(
+    await pool.query(
       "INSERT INTO lessons (idlessons, name, active, created, updated, idcustomers) VALUES (?, ?, ?, ?, ?, ?)",
       [lessonID, name, active, created, updated, customerID]
     );
-    console.log(res);
   } catch (error) {
     throw next(error);
   }

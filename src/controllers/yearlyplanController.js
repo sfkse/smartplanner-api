@@ -23,15 +23,15 @@ const getCustomerSingleYearlyplan = async (req, res, next) => {
   const { idcustomers } = res.locals.user;
   const { id } = req.params;
   try {
-    const classTimeplans = await getSingleYearlyplan(idcustomers, next);
-    const singleClassTimeplan = classTimeplans.filter(
-      (classTimeplan) => classTimeplan.idclasstimeplans === id
+    const yearlyPlans = await getSingleYearlyplan(idcustomers, next);
+    const singleClassTimeplan = yearlyPlans.filter(
+      (yearlyPlan) => yearlyPlan.idyearlyplans === id
     );
     return res.status(200).json(singleClassTimeplan);
   } catch (error) {
     return next(
       new AppError(
-        `Error in getCustomerSingleClassTimeplans when fetching timeplans: ${error}`
+        `Error in getCustomerSingleYearlyplan when fetching yearlyplan: ${error}`
       )
     );
   }

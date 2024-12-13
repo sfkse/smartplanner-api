@@ -13,6 +13,26 @@ const getClassTimeplansExpanded = async (customerID, next) => {
     throw next(error);
   }
 };
+
+const getClassTimeplanByClass = async (customerID, classID, next) => {
+  try {
+    const [classTimeplans] = await pool.query(
+      "SELECT * FROM classtimeplans WHERE idclasses=? and idcustomers=? and active=1 ORDER BY created DESC",
+      [classID, customerID]
+    );
+    return classTimeplans.map((c) => {
+      return {
+        idclasstimeplans: c.idclasstimeplans,
+        idclasses: c.idclasses,
+        timeplanname: c.timeplanname,
+        minutes: JSON.parse(c.minutes),
+      };
+    });
+  } catch (error) {
+    throw next(error);
+  }
+};
+
 const createClassTimeplan = async (data, idcustomers, next) => {
   const { timeplanname, idclasses, minutes } = data;
 
@@ -67,6 +87,7 @@ const deleteTimeplan = async (idclasstimeplans, next) => {
 
 module.exports = {
   getClassTimeplansExpanded,
+  getClassTimeplanByClass,
   createClassTimeplan,
   updateClassTimeplan,
   deleteTimeplan,

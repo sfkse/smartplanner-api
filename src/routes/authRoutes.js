@@ -9,7 +9,7 @@ const {
 const { verifyJWTMiddleware } = require("../middlewares/authMiddleware");
 
 router.post("/login", login);
-router.post("/register", register);
+router.post("/register", verifyJWTMiddleware, register);
 router.post("/logout", logout);
 router.get("/authuser", verifyJWTMiddleware, getLoggedInUser);
 

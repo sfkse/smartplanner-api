@@ -103,10 +103,8 @@ const getSingleUserByEmail = async (email, next) => {
       "SELECT * FROM users WHERE email = ? and active",
       [email]
     );
-    return result[0].map((user) => ({
-      ...user,
-      password: undefined,
-    }))[0];
+
+    return result[0];
   } catch (error) {
     return next(error);
   }

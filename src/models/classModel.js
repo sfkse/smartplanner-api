@@ -50,7 +50,7 @@ const updateClass = async (customerID, data, next) => {
 
 const deleteClass = async (classID, next) => {
   const updated = getTimestampSeconds();
-  console.log(classID);
+
   try {
     await pool.query(
       "UPDATE classes SET updated = ?, active = 0 WHERE idclasses = ?",

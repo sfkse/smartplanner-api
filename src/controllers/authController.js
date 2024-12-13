@@ -8,7 +8,6 @@ const {
 } = require("../models/userModel");
 
 const AppError = require("../helpers/errorHelper");
-const { getTimestampSeconds } = require("../helpers/dateHelper");
 const {
   validateCredentials,
   isCorrectPassword,
@@ -18,13 +17,14 @@ const {
  ** @desc Register new user
  */
 const register = async (req, res, next) => {
-  const { email, firstName, lastName, skills, password, confirmPassword } =
+  const { email, password, firstName, lastName, profession, confirmPassword } =
     req.body;
 
   const validationResult = validateCredentials(
     email,
     firstName,
     lastName,
+    profession,
     password,
     confirmPassword
   );
@@ -34,18 +34,16 @@ const register = async (req, res, next) => {
     );
 
   const user = await getSingleUserByEmail(email, next);
+
   if (user.length > 0) return next(new AppError("User already exists", 409));
 
-  const updated = getTimestampSeconds();
-  const userType = 0;
   const userObj = {
     email,
     firstName,
     lastName,
-    updated,
-    userType,
-    skills,
+    profession,
     password,
+    customerID: res.locals.user.idcustomers,
   };
 
   const newUser = await createUser(userObj, next);
